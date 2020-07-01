@@ -1,20 +1,84 @@
+@font-face {
+    font-family: 'Raleway';
+}
+
+html {
+    font-family: 'Raleway';
+}
+
 /* POSTINGS PAGE */
-#postings_container {
+#c_postings {
     width: 1200px;
+    margin: auto;
+    padding: 64px 0;
+}
+
+#c_postings > h1 {
+    font-size: 32px;
+    color: rgba(0, 0, 0, 0.75);
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 48px;
+}
+
+#c_postingsInner {
     display: flex;
     justify-content: space-between;
-    padding: 64px 0;
-    margin: auto;
 }
 
-#left_nav {
+#leftNav {
     width: 300px;
     height: 600px;
-    background-color: blue;
 }
 
-#right_content {
+#rightContent {
     width: 836px;
     height: 1000px;
-    background-color: red;
+}
+
+.c_leftNav {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-bottom: 36px;
+    position: relative;
+}
+
+.c_leftNav > label {
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.75);
+}
+
+.c_leftNav > input {
+    width: 100%;
+    padding: 12px 12px;
+    border: 3px double #eee;
+    border-radius: 5px;
+    font-size: 17px;
+    font-weight: normal;
+    color: rgba(0, 0, 0, 0.5);
+    margin-top: 12px;
+    box-sizing: border-box;
+}
+
+#c_catDropdown {
+    position: absolute;
+    background-color: blue;
+    z-index: 1;
+    width: 100%;
+    top: 87px;
+    box-shadow: 0 3px 4px #ddd;
+    border-radius: 5px;
+}
+
+.item_catDropdown {
+    padding: 16px;
+    font-size: 16px;
+    color: rgb(45, 158, 0);
+    background-color: white;
+}
+
+.item_catDropdown:hover {
+    background-color: #fafafa;
+    cursor: pointer;
 }
