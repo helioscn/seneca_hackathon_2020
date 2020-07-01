@@ -28,3 +28,9 @@ app.get("/", (req, res) => {
         title: "Home"
     });
 });
+
+app.get("/postings", (req, res) => {
+    res.render('postings', {
+        title: "Postings"
+    });
+});
