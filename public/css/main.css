@@ -4,6 +4,7 @@
     display: flex;
     justify-content: space-between;
     padding: 64px 0;
+    margin: auto;
 }
 
 #left_nav {
