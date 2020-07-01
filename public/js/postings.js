@@ -1,6 +1,7 @@
 window.addEventListener("load", () => {
     setupDistSlider();
     setupCategorySearch();
+    setupPosts();
 });
 
 setupDistSlider = () => {
@@ -16,6 +17,10 @@ setupDistSlider = () => {
 setupCategorySearch = () => {
     const inputBox = document.getElementById("i_category");
     const dropBox = document.getElementById("c_catDropdown");
+    const deleteButton = document.getElementById("deleteCategory");
+
+    if (inputBox.value != "")
+        deleteButton.style.display = "block";
 
     inputBox.addEventListener("focus", () => {
         inputBox.style.borderBottomLeftRadius = 0;
@@ -39,6 +44,20 @@ setupCategorySearch = () => {
         dropBox.innerHTML = "";
         queryCategories(inputBox.value);
     });
+
+    ["input", "change"].forEach(event => {
+        inputBox.addEventListener(event, () => {
+            if (inputBox.value != "")
+                deleteButton.style.display = "block";
+            else
+                deleteButton.style.display = "none";
+        });
+    });
+
+    deleteButton.addEventListener("click", () => {
+        inputBox.value = "";
+        deleteButton.style.display = "none";
+    });
 }
 
 queryCategories = (val) => {
@@ -51,6 +70,7 @@ queryCategories = (val) => {
         container.innerHTML = item;
         container.addEventListener("click", () => {
             inputBox.value = item;
+            document.getElementById("deleteCategory").style.display = "block";
         });
         dropBox.appendChild(container);
     }
@@ -61,10 +81,28 @@ queryCategories = (val) => {
         }
     } else {
         categories.forEach(i => {
-            if (i.includes(val)) {
+            if ((i.toLowerCase()).includes(val.toLowerCase())) {
                 createContainer(i);
             }
         });
     }
 }
 
+setupPosts = () => {
+    const content = document.getElementById("rightContent");
+    const seeMoreButtons = content.querySelectorAll(".postDropdownButton");
+    
+    seeMoreButtons.forEach(item => {
+        item.addEventListener("click", () => {
+            const postBody = item.parentNode.parentNode.querySelector(".c_postBody");
+            
+            if (postBody.style.display == "none") {
+                postBody.style.display = "block";
+                item.innerHTML = "Hide Details";
+            } else {
+                postBody.style.display = "none";
+                item.innerHTML = "Show Details";
+            }
+        });
+    });
+}
