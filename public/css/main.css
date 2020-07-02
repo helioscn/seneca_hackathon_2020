@@ -7,6 +7,11 @@ html {
 }
 
 /* POSTINGS PAGE */
+.spinner {
+    max-width: 24px;
+    max-height: 24px;
+}
+
 #c_postings {
     width: 1200px;
     margin: auto;
