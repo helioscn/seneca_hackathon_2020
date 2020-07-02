@@ -61,14 +61,37 @@ html {
     box-sizing: border-box;
 }
 
-#c_catDropdown {
+.c_dropdown {
     position: absolute;
-    background-color: blue;
     z-index: 1;
-    width: 100%;
     top: 87px;
     box-shadow: 0 3px 4px #ddd;
     border-radius: 5px;
+}
+
+#c_locDropdown {
+    position: absolute;
+    background-color: blue;
+    width: auto;
+}
+
+.item_locDropdown {
+    padding: 16px;
+    font-size: 16px;
+    color: rgb(45, 158, 0);
+    background-color: white;
+    display: flex;
+    align-items: center;
+}
+
+.item_locDropdown > img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+#c_catDropdown {
+    width: 100%;
 }
 
 #deleteCategory {
@@ -93,7 +116,7 @@ html {
     background-color: white;
 }
 
-.item_catDropdown:hover {
+.item_catDropdown:hover, .item_locDropdown:hover {
     background-color: #fafafa;
     cursor: pointer;
 }

@@ -5,9 +5,10 @@
     <h1>Service Requests</h1>
     <div id="c_postingsInner">
         <div id="leftNav">
-            <div id="c_showCity" class="c_leftNav">
-                <label>Location</label>
-                <input name="i_city" id="i_city" type="text">
+            <div id="showLocation" class="c_leftNav">
+                <label>Address</label>
+                <input name="i_location" id="i_location" type="text">
+                <div id="c_locDropdown" class="c_dropdown"></div>
             </div>
             <div id="c_distSlider" class="c_leftNav">
                 <label>Within <b id="postingsDistShow">50</b> km radius</label>
@@ -19,7 +20,7 @@
                     <input name="i_category" id="i_category" type="text" placeholder="Enter a category">
                     <span id="deleteCategory">×</span>
                 </div>
-                <div id="c_catDropdown">
+                <div id="c_catDropdown" class="c_dropdown">
                 </div>
             </div>
         </div>

@@ -2,6 +2,7 @@ window.addEventListener("load", () => {
     setupDistSlider();
     setupCategorySearch();
     setupPosts();
+    setupLocationSearch();
 });
 
 setupDistSlider = () => {
@@ -104,5 +105,63 @@ setupPosts = () => {
                 item.innerHTML = "Show Details";
             }
         });
+    });
+}
+
+setupLocationSearch = () => {
+    const input = document.getElementById("i_location");
+    const dropdown = document.getElementById("c_locDropdown");
+
+    getLocation = () => {
+        fetch("/api/getlocation", {
+            method: "POST",
+            body: JSON.stringify({
+                input: input.value
+            }),
+            headers: {          
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(locations => {
+            dropdown.innerHTML = "";
+            locations.forEach(l => {
+                console.log(l);
+                const container = document.createElement("div");
+                const icon = document.createElement("img");
+                const address = document.createElement("span");
+                
+                container.className = "item_locDropdown";
+                icon.src = "assets/images/location.png";
+                address.innerHTML = l;
+
+                container.appendChild(icon);
+                container.appendChild(address);
+
+                container.addEventListener("click", () => {
+                    input.value = l;
+                    dropdown.innerHTML = "";
+                });
+
+                dropdown.appendChild(container);
+            })
+        });
+    }
+
+    input.addEventListener("focus", () => {
+        if (input.value != "") getLocation();
+    });
+
+    document.addEventListener("click", (e) => {
+        if (e.target.id != "i_location") dropdown.innerHTML = "";
+    });
+
+    input.addEventListener("input", () => {
+        if (input.value != "") {
+            getLocation();
+        } else {
+            dropdown.innerHTML = "";
+        }
     });
 }
