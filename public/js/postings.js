@@ -1,14 +1,14 @@
 window.addEventListener("load", () => {
     setupDistSlider();
     setupCategorySearch();
-    setupPosts();
+    parsePostLocations();
     setupLocationSearch();
 });
 
 // document.createElement shorter identifier, with option of className
 ce = (type, cn = false) => {
     let el = document.createElement(type);
-    if (cn) el.className = cn;
+    if (typeof cn === "string") el.className = cn;
     return el;
 }
 
@@ -27,6 +27,12 @@ setupDistSlider = () => {
     distSlider.oninput = () => {
         output.innerHTML = distSlider.value;
     }
+
+    distSlider.addEventListener("mouseup", () => {
+        const content = document.getElementById("rightContent");
+        content.innerHTML = "";
+        parsePostLocations();
+    });
 }
 
 setupCategorySearch = () => {
@@ -102,106 +108,128 @@ queryCategories = (val) => {
     }
 }
 
-setupPosts = () => {
+createPosts = (distance, i) => {
     const content = document.getElementById("rightContent");
+    let existingPosts = content.querySelectorAll(".c_post");
+    let found = false;
 
-    createHeader = (i) => {
-        const container = ce("div", "c_postHeader");
-        const avatar = ce("img", "postHeaderImage");
-        const infoContainer = ce("div", "c_postHeaderInfo");
-        const title = ce("a");
-        const user = ce("span", "posterName");
-        const compensation = ce("span", "postCompensation");
-        const button = ce("span", "postDropdownButton");
+    for (let j = 0; j < existingPosts.length; j++)
+        if (existingPosts[j].dataset.id == i) found = true;
 
-        avatar.src = "assets/images/postDefaultIcon.png";
-        title.innerHTML = posts[i].title;
-        user.innerHTML = posts[i].name;
-        compensation.innerHTML = "$" + posts[i].compensation;
-        button.innerHTML = "Show Details";
+    if (content.querySelector(".spinner"))
+        content.removeChild(content.childNodes[0]);
 
-        // info container
-        infoContainer.appendAll(title, user, compensation);
+    if (!found) {
+        createHeader = () => {
+            const container = ce("div", "c_postHeader");
+            const avatar = ce("img", "postHeaderImage");
+            const infoContainer = ce("div", "c_postHeaderInfo");
+            const title = ce("a");
+            const user = ce("span", "posterName");
+            const compensation = ce("span", "postCompensation");
+            const button = ce("span", "postDropdownButton");
 
-        // header
-        container.appendAll(avatar, infoContainer, button);
+            avatar.src = "assets/images/postDefaultIcon.png";
+            title.innerHTML = posts[i].title;
+            user.innerHTML = posts[i].name;
+            compensation.innerHTML = "$" + posts[i].compensation;
+            button.innerHTML = "Show Details";
+            toggleDetailsButton(button);
 
-        return container;
-    }
+            // info container
+            infoContainer.appendAll(title, user, compensation);
 
-    createBody = (i) => {
-        const container = ce("div", "c_postBody");
-        const separator = ce("hr");
-        const subtitle = ce("h3");
-        const desc = ce("p", "postBodyDesc");
+            // header
+            container.appendAll(avatar, infoContainer, button);
 
-        subtitle.innerHTML = "Description";
-        desc.innerHTML = posts[i].desc;
+            return container;
+        }
 
-        container.appendAll(separator, subtitle, desc);
+        createBody = () => {
+            const container = ce("div", "c_postBody");
+            const separator = ce("hr");
+            const subtitle = ce("h3");
+            const desc = ce("p", "postBodyDesc");
 
-        return container;
-    }
+            subtitle.innerHTML = "Description";
+            desc.innerHTML = posts[i].desc;
 
-    createFooter = (i) => {
-        const container = ce("div", "c_postFooter");
-        const distContainer = ce("div", "c_iconInfo");
-        const timeContainer = ce("div", "c_iconInfo");
-        const distIcon = ce("img");
-        const timeIcon = ce("img");
-        const dist = ce("span");
-        const time = ce("span");
+            container.appendAll(separator, subtitle, desc);
 
-        let origin = document.getElementById("i_location").value;
-        let dest = posts[i].location;
-        distIcon.src = "assets/images/ruler.png";
-        
-        time.innerHTML = posts[i].time;
-        timeIcon.src = "assets/images/clock.png";
+            return container;
+        }
 
-        distContainer.appendAll(distIcon, dist);
-        timeContainer.appendAll(timeIcon, time);
-        container.appendAll(distContainer, timeContainer);
-        container.dataset.address = posts[i].location;
+        createFooter = () => {
+            const container = ce("div", "c_postFooter");
+            const distContainer = ce("div", "c_iconInfo");
+            const timeContainer = ce("div", "c_iconInfo");
+            const distIcon = ce("img");
+            const timeIcon = ce("img");
+            const dist = ce("span");
+            const time = ce("span");
 
-        return container;
-    }
+            let origin = document.getElementById("i_location").value;
+            let dest = posts[i].location;
+            dist.innerHTML = distance + " km away";
+            distIcon.src = "assets/images/ruler.png";
+            
+            time.innerHTML = timeToAgo(posts[i].time);
+            timeIcon.src = "assets/images/clock.png";
 
-    posts.forEach((item, i) => {
+            distContainer.appendAll(distIcon, dist);
+            timeContainer.appendAll(timeIcon, time);
+            container.appendAll(distContainer, timeContainer);
+            container.dataset.address = posts[i].location;
+
+            return container;
+        }
+
         const post = ce("div", "c_post");
-        const header = createHeader(i);
-        const body = createBody(i);
-        const footer = createFooter(i);
+        const header = createHeader();
+        const body = createBody();
+        const footer = createFooter();
 
+        post.dataset.id = i;
         post.appendAll(header, body, footer);
         content.appendChild(post);
-    });
-
-    configurePostDistance();
-
-    toggleDetailsButton(content);
+    }
 }
 
-toggleDetailsButton = (content) => {
-    const seeMoreButtons = content.querySelectorAll(".postDropdownButton");
-    
-    seeMoreButtons.forEach(item => {
-        item.addEventListener("click", () => {
-            const postBody = item.parentNode.parentNode.querySelector(".c_postBody");
+timeToAgo = (time) => {
+    let current = (new Date().getTime() / 1000).toFixed(0);
+    let diff = current - time;
+    console.log(diff);
+
+    if (diff < 60) {
+        return diff + (time === 1 ? " second ago" : " seconds ago");
+    } else if (diff >= 60 && diff < 3600) {
+        let minutes = diff / 60;
+        return minutes.toFixed(0) + (minutes === 1 ? " minute ago" : " minutes ago");
+    } else if (diff >= 3600 && diff < 86400) {
+        let hours = diff / 3600;
+        return hours.toFixed(0) + (hours === 1 ? " hour ago" : " hours ago");
+    } else if (diff >= 86400) {
+        let days = diff / 86400;
+        return days.toFixed(0) + (days === 1 ? " day ago" : " days ago");
+    }
+}
+
+toggleDetailsButton = (button) => {
+    button.addEventListener("click", () => {
+        const postBody = button.parentNode.parentNode.querySelector(".c_postBody");
             
-            // toggle details
-            if (postBody.style.display == "none") {
-                postBody.style.display = "block";
-                item.innerHTML = "Hide Details";
-            } else {
-                postBody.style.display = "none";
-                item.innerHTML = "Show Details";
-            }
-        });
+        // toggle details
+        if (postBody.style.display == "none") {
+            postBody.style.display = "block";
+            button.innerHTML = "Hide Details";
+        } else {
+            postBody.style.display = "none";
+            button.innerHTML = "Show Details";
+        }
     });
 }
 
-fetchDistance = (item, origin, dest) => {
+fetchDistance = (i, origin, dest) => {
     fetch("/api/getdistance", {
         method: "POST",
         body: JSON.stringify({
@@ -215,7 +243,9 @@ fetchDistance = (item, origin, dest) => {
     })
     .then(res => res.json())
     .then(result => {
-        item.querySelector(".c_iconInfo > span").innerHTML = result.distance.toFixed(1) + " km away";
+        let radius = parseInt(document.getElementById("postingsDistSlider").value, 10);
+        let d = parseInt(result.distance.toFixed(1), 10);
+        if (d <= radius && d > 0) createPosts(d, i);
     }).catch(err => {
         console.log(err);
     });
@@ -255,7 +285,7 @@ setupLocationSearch = () => {
                     input.value = l;
                     dropdown.innerHTML = "";
 
-                    configurePostDistance();
+                    parsePostLocations();
                 });
 
                 dropdown.appendChild(container);
@@ -280,6 +310,7 @@ setupLocationSearch = () => {
     });
 }
 
+/*
 configurePostDistance = () => {
     const locInput = document.getElementById("i_location");
     let shownPosts = document.querySelectorAll(".c_post");
@@ -288,8 +319,19 @@ configurePostDistance = () => {
         let addr = item.querySelector(".c_postFooter").dataset.address;
         fetchDistance(item, locInput.value, addr);
 
-        let spinner = ce("img", "spinner");
-        spinner.src = "assets/images/spinner.gif";
-        item.querySelector(".c_iconInfo > span").appendChild(spinner);
+    });
+}
+*/
+
+parsePostLocations = () => {
+    const locInput = document.getElementById("i_location");
+    const content = document.getElementById("rightContent");
+    const spinner = ce("img", "spinner");
+    content.innerHTML = "";
+    spinner.src = "assets/images/spinner.gif";
+    content.appendChild(spinner);
+    
+    posts.forEach((item, i) => {
+        fetchDistance(i, locInput.value, item.location);
     });
 }

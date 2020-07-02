@@ -8,8 +8,10 @@ html {
 
 /* POSTINGS PAGE */
 .spinner {
-    max-width: 24px;
-    max-height: 24px;
+    margin: auto;
+    display: block;
+    width: 100px;
+    height: 100px;
 }
 
 #c_postings {
