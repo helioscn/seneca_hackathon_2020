@@ -5,6 +5,7 @@ const path = require('path');
 const app = express();
 const router = express.Router();
 const getlocation = require('./routes/getlocation');
+const getdistance = require('./routes/getdistance');
 
 // setup view engine
 app.engine('hbs', hbs({ 
@@ -27,6 +28,7 @@ app.listen(PORT);
 
 // look for routes
 app.use("/api/getlocation", getlocation);
+app.use("/api/getdistance", getdistance);
 
 app.get("/", (req, res) => {
     res.render('index', {
