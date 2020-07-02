@@ -27,6 +27,13 @@ setupDistSlider = () => {
     distSlider.oninput = () => {
         output.innerHTML = distSlider.value;
     }
+
+    distSlider.addEventListener("mouseup", () => {
+        const content = document.getElementById("rightContent");
+        content.innerHTML = "";
+        createPosts();
+        configurePostDistance();
+    });
 }
 
 setupCategorySearch = () => {
@@ -103,7 +110,13 @@ queryCategories = (val) => {
 }
 
 setupPosts = () => {
+    createPosts();
+    configurePostDistance();
+}
+
+createPosts = () => {
     const content = document.getElementById("rightContent");
+    const radius = document.getElementById("postingsDistSlider").value;     // fetch posts after getting radius
 
     createHeader = (i) => {
         const container = ce("div", "c_postHeader");
@@ -176,9 +189,7 @@ setupPosts = () => {
         post.appendAll(header, body, footer);
         content.appendChild(post);
     });
-
-    configurePostDistance();
-
+    
     toggleDetailsButton(content);
 }
 
@@ -286,10 +297,12 @@ configurePostDistance = () => {
 
     shownPosts.forEach((item, i) => {
         let addr = item.querySelector(".c_postFooter").dataset.address;
+        let distSpan = item.querySelector(".c_iconInfo > span");
         fetchDistance(item, locInput.value, addr);
 
         let spinner = ce("img", "spinner");
         spinner.src = "assets/images/spinner.gif";
-        item.querySelector(".c_iconInfo > span").appendChild(spinner);
+        distSpan.innerHTML = "";
+        distSpan.appendChild(spinner);
     });
 }
