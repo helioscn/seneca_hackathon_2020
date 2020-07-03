@@ -3,7 +3,6 @@ window.addEventListener("load", () => {
     setupCategorySearch();
     queryForPosts();
     setupLocationSearch();
-    setupCompensationRadios();
     setupPriceSliders();
 });
 
@@ -260,50 +259,61 @@ fetchDistance = (origin, dest) => {
     });
 }
 
-setupLocationSearch = () => {
-    const input = document.getElementById("i_location");
-    const dropdown = document.getElementById("c_locDropdown");
-
-    getLocation = () => {
+getLocation = (input) => {
+    return new Promise((resolve, reject) => {
         fetch("/api/getlocation", {
             method: "POST",
             body: JSON.stringify({
-                input: input.value
+                input: input
             }),
             headers: {          
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-        })
-        .then(res => res.json())
-        .then(locations => {
+        }).then(res => {
+            return res.json();
+        }).then(data => {
+            // returns 5 locations
+            resolve(data);
+        }).catch(err => {
+            reject(err);
+        });
+    });
+}
+
+setupLocationSearch = () => {
+    const input = document.getElementById("i_location");
+    const dropdown = document.getElementById("c_locDropdown");
+
+    useLocation = () => {
+        getLocation(input.value).then(locations => {
             dropdown.innerHTML = "";
             locations.forEach(l => {
                 console.log(l);
                 const container = ce("div");
                 const icon = ce("img");
                 const address = ce("span");
-                
+                    
                 container.className = "item_locDropdown";
                 icon.src = "assets/images/location.png";
                 address.innerHTML = l;
-
+    
                 container.appendAll(icon, address);
-
+    
                 container.addEventListener("click", () => {
                     input.value = l;
                     dropdown.innerHTML = "";
-
+    
                     queryForPosts();
                 });
-
+    
                 dropdown.appendChild(container);
-            })
+            });
         });
     }
 
     input.addEventListener("focus", () => {
-        if (input.value != "") getLocation();
+        if (input.value != "") useLocation();
     });
 
     document.addEventListener("click", (e) => {
@@ -312,7 +322,7 @@ setupLocationSearch = () => {
 
     input.addEventListener("input", () => {
         if (input.value != "") {
-            getLocation();
+            useLocation();
         } else {
             dropdown.innerHTML = "";
         }
@@ -332,22 +342,15 @@ queryForPosts = () => {
         let minDollars = parseInt(document.getElementById("minPrice").innerText.replace(/^\$/, ""));
         let maxDollars = parseInt(document.getElementById("maxPrice").innerText.replace(/^\$/, ""));
         if (item.compensation >= minDollars && item.compensation <= maxDollars) {
-            fetchDistance(locInput.value, item.location).then(data => {
-                let radius = parseInt(document.getElementById("postingsDistSlider").value, 10);
-                let d = parseInt(data.distance.toFixed(1), 10);
-                if (d <= radius && d > 0) createPosts(d, i);
-            });
+            let type = document.querySelectorAll("input[name='compType']:checked")[0].value;
+            if ((type == "hourly" && item.hourly) || (type == "fixed" && !item.hourly) || type == "any") {
+                fetchDistance(locInput.value, item.location).then(data => {
+                    let radius = parseInt(document.getElementById("postingsDistSlider").value, 10);
+                    let d = parseInt(data.distance.toFixed(1), 10);
+                    if (d <= radius && d > 0) createPosts(d, i);
+                });
+            }
         }
-    });
-}
-
-setupCompensationRadios = () => {
-    let radios = document.querySelectorAll("input[type=radio][name='compType']");
-
-    Array.prototype.forEach.call(radios, radio => {
-        radio.addEventListener("change", (e) => {
-
-        });
     });
 }
 
