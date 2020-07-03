@@ -1,8 +1,10 @@
 window.addEventListener("load", () => {
     setupDistSlider();
     setupCategorySearch();
-    parsePostLocations();
+    queryForPosts();
     setupLocationSearch();
+    setupCompensationRadios();
+    setupPriceSliders();
 });
 
 // document.createElement shorter identifier, with option of className
@@ -24,14 +26,14 @@ setupDistSlider = () => {
     const output = document.getElementById("postingsDistShow");
 
     output.innerHTML = distSlider.value;
-    distSlider.oninput = () => {
+    distSlider.addEventListener("input", () => {
         output.innerHTML = distSlider.value;
-    }
+    });
 
     distSlider.addEventListener("mouseup", () => {
         const content = document.getElementById("rightContent");
         content.innerHTML = "";
-        parsePostLocations();
+        queryForPosts();
     });
 }
 
@@ -76,7 +78,9 @@ setupCategorySearch = () => {
     });
 
     deleteButton.addEventListener("click", () => {
+        var event = new Event('change');
         inputBox.value = "";
+        inputBox.dispatchEvent(event);
         deleteButton.style.display = "none";
     });
 }
@@ -89,7 +93,9 @@ queryCategories = (val) => {
         let container = ce("div", "item_catDropdown");
         container.innerHTML = item;
         container.addEventListener("click", () => {
+            var event = new Event('change');
             inputBox.value = item;
+            inputBox.dispatchEvent(event);
             document.getElementById("deleteCategory").style.display = "block";
         });
         dropBox.appendChild(container);
@@ -132,7 +138,11 @@ createPosts = (distance, i) => {
             avatar.src = "assets/images/postDefaultIcon.png";
             title.innerHTML = posts[i].title;
             user.innerHTML = posts[i].name;
-            compensation.innerHTML = "$" + posts[i].compensation;
+
+            let dollars = "$" + posts[i].compensation;
+            if (posts[i].hourly) dollars += "/hr";
+            compensation.innerHTML = dollars;
+
             button.innerHTML = "Show Details";
             toggleDetailsButton(button);
 
@@ -190,6 +200,7 @@ createPosts = (distance, i) => {
         const footer = createFooter();
 
         post.dataset.id = i;
+        post.dataset.hourly = posts[i].hourly;
         post.appendAll(header, body, footer);
         content.appendChild(post);
     }
@@ -229,25 +240,47 @@ toggleDetailsButton = (button) => {
     });
 }
 
-fetchDistance = (i, origin, dest) => {
-    fetch("/api/getdistance", {
-        method: "POST",
-        body: JSON.stringify({
-            origin: origin,
-            dest: dest
-        }),
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(res => res.json())
-    .then(result => {
-        let radius = parseInt(document.getElementById("postingsDistSlider").value, 10);
-        let d = parseInt(result.distance.toFixed(1), 10);
-        if (d <= radius && d > 0) createPosts(d, i);
-    }).catch(err => {
-        console.log(err);
+fetchDistance = (origin, dest) => {
+    return new Promise((resolve, reject) => {
+        fetch("/api/getdistance", {
+            method: "POST",
+            body: JSON.stringify({
+                origin: origin,
+                dest: dest
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            return res.json();
+        }).then(data => {
+            resolve(data);
+        }).catch(err => {
+            reject(err);
+        });
+    });
+}
+
+getLocation = (input) => {
+    return new Promise((resolve, reject) => {
+        fetch("/api/getlocation", {
+            method: "POST",
+            body: JSON.stringify({
+                input: input
+            }),
+            headers: {          
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            return res.json();
+        }).then(data => {
+            // returns 5 locations
+            resolve(data);
+        }).catch(err => {
+            reject(err);
+        });
     });
 }
 
@@ -255,46 +288,35 @@ setupLocationSearch = () => {
     const input = document.getElementById("i_location");
     const dropdown = document.getElementById("c_locDropdown");
 
-    getLocation = () => {
-        fetch("/api/getlocation", {
-            method: "POST",
-            body: JSON.stringify({
-                input: input.value
-            }),
-            headers: {          
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(locations => {
+    useLocation = () => {
+        getLocation(input.value).then(locations => {
             dropdown.innerHTML = "";
             locations.forEach(l => {
                 console.log(l);
                 const container = ce("div");
                 const icon = ce("img");
                 const address = ce("span");
-                
+                    
                 container.className = "item_locDropdown";
                 icon.src = "assets/images/location.png";
                 address.innerHTML = l;
-
+    
                 container.appendAll(icon, address);
-
+    
                 container.addEventListener("click", () => {
                     input.value = l;
                     dropdown.innerHTML = "";
-
-                    parsePostLocations();
+    
+                    queryForPosts();
                 });
-
+    
                 dropdown.appendChild(container);
-            })
+            });
         });
     }
 
     input.addEventListener("focus", () => {
-        if (input.value != "") getLocation();
+        if (input.value != "") useLocation();
     });
 
     document.addEventListener("click", (e) => {
@@ -303,35 +325,140 @@ setupLocationSearch = () => {
 
     input.addEventListener("input", () => {
         if (input.value != "") {
-            getLocation();
+            useLocation();
         } else {
             dropdown.innerHTML = "";
         }
     });
 }
 
-/*
-configurePostDistance = () => {
-    const locInput = document.getElementById("i_location");
-    let shownPosts = document.querySelectorAll(".c_post");
-
-    shownPosts.forEach((item, i) => {
-        let addr = item.querySelector(".c_postFooter").dataset.address;
-        fetchDistance(item, locInput.value, addr);
-
-    });
-}
-*/
-
-parsePostLocations = () => {
+queryForPosts = () => {
     const locInput = document.getElementById("i_location");
     const content = document.getElementById("rightContent");
     const spinner = ce("img", "spinner");
     content.innerHTML = "";
+
     spinner.src = "assets/images/spinner.gif";
     content.appendChild(spinner);
     
     posts.forEach((item, i) => {
-        fetchDistance(i, locInput.value, item.location);
+        // condition 1: show posts only within compensation range
+        let minDollars = parseInt(document.getElementById("minPrice").innerText.replace(/^\$/, ""));
+        let maxDollars = parseInt(document.getElementById("maxPrice").innerText.replace(/^\$/, ""));
+        if (item.compensation >= minDollars && item.compensation <= maxDollars) {
+            // condition 2: show post only if compensation type matches
+            let type = document.querySelectorAll("input[name='compType']:checked")[0].value;
+            if ((type == "hourly" && item.hourly) || (type == "fixed" && !item.hourly) || type == "any") {
+                // call fetch distance api
+                fetchDistance(locInput.value, item.location).then(data => {
+                    let radius = parseInt(document.getElementById("postingsDistSlider").value, 10);
+                    let d = parseInt(data.distance.toFixed(1), 10);
+                    if (d <= radius && d > 0) createPosts(d, i);
+                });
+            }
+        }
     });
+}
+
+setupCompensationRadios = () => {
+    let radios = document.querySelectorAll("input[name='compType']");
+    radios.forEach(radio => {
+        radio.addEventListener("change", () => {
+            queryForPosts();
+        });
+    });
+}
+
+setupPriceSliders = () => {
+    let sliderBg = document.getElementById("priceSlider");
+    let sliderWidth = sliderBg.clientWidth;
+    let minSlider = document.getElementById("minSlider");
+    let maxSlider = document.getElementById("maxSlider");
+    let minDrag = false, maxDrag = false;
+    let minX, maxX, offsetX;
+
+    minSlider.addEventListener("mousedown", (e) => {
+        minDrag = true;
+    });
+
+    maxSlider.addEventListener("mousedown", (e) => {
+        maxDrag = true;
+    });
+
+    document.addEventListener("mouseup", (e) => {
+        if (minDrag) {
+            minDrag = false;
+            queryForPosts();
+        } else if (maxDrag) {
+            maxDrag = false;
+            queryForPosts();
+        }
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (minDrag) 
+            movePriceSlider("min", e.clientX);
+        else if (maxDrag)
+            movePriceSlider("max", e.clientX);
+    });
+}
+
+movePriceSlider = (current, mouseX) => {
+    let mainSlider = document.getElementById("priceSlider");                // main slider width minus slider width
+    let xFromScreenLeft = mainSlider.getBoundingClientRect().left + 12;     // how far away start of main slider is from left edge of screen
+    let minSlider = document.getElementById("minSlider");
+    let maxSlider = document.getElementById("maxSlider");
+    let sliderWidth = minSlider.clientWidth;
+    let mainWidth = mainSlider.clientWidth - sliderWidth;   
+    let inner = document.getElementById("innerPriceSlider");                // inner bar that highlights current range                     
+    let toPos = mouseX - xFromScreenLeft;
+    
+    let difference = maxSlider.offsetLeft - minSlider.offsetLeft;
+
+    // set inner bar width
+    inner.style.width = difference + "px";
+
+    if (current === "min") {
+        if (toPos >= 0) {
+            let maxX = maxSlider.offsetLeft;
+            if (toPos < maxX) {
+                // set inner bar left to match min slider position
+                inner.style.left = (maxSlider.offsetLeft - difference) + "px";
+                
+                minSlider.style.left = toPos + "px";
+            } else {
+                // min slider can't move past max slider
+                inner.style.width = "5px";
+                inner.style.left = (maxSlider.offsetLeft - 2) + "px";
+                minSlider.style.left = (maxX - 2) + "px";
+            }
+        } else {
+            inner.style.left = "0px";
+            minSlider.style.left = 0;
+        }
+    } else {
+        let minX = minSlider.offsetLeft;
+        if (toPos <= mainSlider.clientWidth - sliderWidth) {
+            if (toPos > minX) {
+                maxSlider.style.left = toPos + "px";
+            } else {
+                // max slider can't move past min slider
+                maxSlider.style.left = (minX + 2) + "px";
+            }
+        } else {
+            maxSlider.style.left = (mainSlider.clientWidth - sliderWidth) + "px";
+        }
+    }
+
+    sliderPositionToPriceRange(minSlider.offsetLeft, maxSlider.offsetLeft, mainWidth);
+}
+
+sliderPositionToPriceRange = (left, right, width) => {
+    const maxPrice = 1000;
+    const minPrice = 1;
+    let maxText = document.getElementById("maxPrice");
+    let minText = document.getElementById("minPrice");
+
+    maxText.innerHTML = "$" + Math.round((right/width) * 1000);
+    minText.innerHTML = "$" + Math.round((left/width) * 1000);
 }
