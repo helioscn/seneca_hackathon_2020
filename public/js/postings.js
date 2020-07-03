@@ -1,8 +1,9 @@
 window.addEventListener("load", () => {
     setupDistSlider();
     setupCategorySearch();
-    parsePostLocations();
+    queryForPosts();
     setupLocationSearch();
+    setupCompensationRadios();
     setupPriceSliders();
 });
 
@@ -32,7 +33,7 @@ setupDistSlider = () => {
     distSlider.addEventListener("mouseup", () => {
         const content = document.getElementById("rightContent");
         content.innerHTML = "";
-        parsePostLocations();
+        queryForPosts();
     });
 }
 
@@ -40,10 +41,6 @@ setupCategorySearch = () => {
     const inputBox = document.getElementById("i_category");
     const dropBox = document.getElementById("c_catDropdown");
     const deleteButton = document.getElementById("deleteCategory");
-
-    inputBox.addEventListener("change", () => {
-        console.log(inputBox.value);
-    });
 
     if (inputBox.value != "")
         deleteButton.style.display = "block";
@@ -241,25 +238,25 @@ toggleDetailsButton = (button) => {
     });
 }
 
-fetchDistance = (i, origin, dest) => {
-    fetch("/api/getdistance", {
-        method: "POST",
-        body: JSON.stringify({
-            origin: origin,
-            dest: dest
-        }),
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(res => res.json())
-    .then(result => {
-        let radius = parseInt(document.getElementById("postingsDistSlider").value, 10);
-        let d = parseInt(result.distance.toFixed(1), 10);
-        if (d <= radius && d > 0) createPosts(d, i);
-    }).catch(err => {
-        console.log(err);
+fetchDistance = (origin, dest) => {
+    return new Promise((resolve, reject) => {
+        fetch("/api/getdistance", {
+            method: "POST",
+            body: JSON.stringify({
+                origin: origin,
+                dest: dest
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            return res.json();
+        }).then(data => {
+            resolve(data);
+        }).catch(err => {
+            reject(err);
+        });
     });
 }
 
@@ -297,7 +294,7 @@ setupLocationSearch = () => {
                     input.value = l;
                     dropdown.innerHTML = "";
 
-                    parsePostLocations();
+                    queryForPosts();
                 });
 
                 dropdown.appendChild(container);
@@ -322,7 +319,7 @@ setupLocationSearch = () => {
     });
 }
 
-parsePostLocations = () => {
+queryForPosts = () => {
     const locInput = document.getElementById("i_location");
     const content = document.getElementById("rightContent");
     const spinner = ce("img", "spinner");
@@ -332,7 +329,25 @@ parsePostLocations = () => {
     content.appendChild(spinner);
     
     posts.forEach((item, i) => {
-        fetchDistance(i, locInput.value, item.location);
+        let minDollars = parseInt(document.getElementById("minPrice").innerText.replace(/^\$/, ""));
+        let maxDollars = parseInt(document.getElementById("maxPrice").innerText.replace(/^\$/, ""));
+        if (item.compensation >= minDollars && item.compensation <= maxDollars) {
+            fetchDistance(locInput.value, item.location).then(data => {
+                let radius = parseInt(document.getElementById("postingsDistSlider").value, 10);
+                let d = parseInt(data.distance.toFixed(1), 10);
+                if (d <= radius && d > 0) createPosts(d, i);
+            });
+        }
+    });
+}
+
+setupCompensationRadios = () => {
+    let radios = document.querySelectorAll("input[type=radio][name='compType']");
+
+    Array.prototype.forEach.call(radios, radio => {
+        radio.addEventListener("change", (e) => {
+
+        });
     });
 }
 
@@ -352,56 +367,80 @@ setupPriceSliders = () => {
         maxDrag = true;
     });
 
-    document.addEventListener("mouseup", () => {
-        if (minDrag) 
+    document.addEventListener("mouseup", (e) => {
+        if (minDrag) {
             minDrag = false;
-        else if (maxDrag)
+            queryForPosts();
+        } else if (maxDrag) {
             maxDrag = false;
+            queryForPosts();
+        }
     });
 
     document.addEventListener("mousemove", (e) => {
         if (minDrag) 
-            movePriceSlider("min", e.clientX)
+            movePriceSlider("min", e.clientX);
         else if (maxDrag)
             movePriceSlider("max", e.clientX);
     });
 }
 
 movePriceSlider = (current, mouseX) => {
-    let mainSlider = document.getElementById("priceSlider");
-    let xFromScreenLeft = mainSlider.getBoundingClientRect().left + 12;
-    let sliderW = mainSlider.clientWidth;
+    let mainSlider = document.getElementById("priceSlider");                         // main slider width minus slider width
+    let xFromScreenLeft = mainSlider.getBoundingClientRect().left + 12;     // how far away start of main slider is from left edge of screen
     let minSlider = document.getElementById("minSlider");
     let maxSlider = document.getElementById("maxSlider");
-    let inner = document.getElementById("innerPriceSlider");
-    let innerMaxW = maxSlider.offsetLeft;
+    let sliderWidth = minSlider.clientWidth;
+    let mainWidth = mainSlider.clientWidth - sliderWidth;   
+    let inner = document.getElementById("innerPriceSlider");                // inner bar that highlights current range                     
     let toPos = mouseX - xFromScreenLeft;
+    
+    let difference = maxSlider.offsetLeft - minSlider.offsetLeft;
+
+    // set inner bar width
+    inner.style.width = difference + "px";
 
     if (current === "min") {
         if (toPos >= 0) {
             let maxX = maxSlider.offsetLeft;
-            if (toPos <= maxX) {
-                inner.style.width = (innerMaxW - toPos) + "px";
-                inner.style.left = toPos + "px";
+            if (toPos < maxX) {
+                // set inner bar left to match min slider position
+                inner.style.left = (maxSlider.offsetLeft - difference) + "px";
+                
                 minSlider.style.left = toPos + "px";
             } else {
-                minSlider.style.left = maxX;
+                // min slider can't move past max slider
+                inner.style.width = "5px";
+                inner.style.left = (maxSlider.offsetLeft - 2) + "px";
+                minSlider.style.left = (maxX - 2) + "px";
             }
         } else {
+            inner.style.left = "0px";
             minSlider.style.left = 0;
         }
     } else {
-        if (toPos <= sliderW - 24) {
-            let minX = minSlider.offsetLeft;
-            if (toPos >= minX) {
-                inner.style.width = inner.clientWidth - (inner.clientWidth - toPos) + "px";
+        let minX = minSlider.offsetLeft;
+        if (toPos <= mainSlider.clientWidth - sliderWidth) {
+            if (toPos > minX) {
                 maxSlider.style.left = toPos + "px";
             } else {
-                maxSlider.style.left = minX;
+                // max slider can't move past min slider
+                maxSlider.style.left = (minX + 2) + "px";
             }
         } else {
-            maxSlider.style.left = (sliderW - 24) + "px";
+            maxSlider.style.left = (mainSlider.clientWidth - sliderWidth) + "px";
         }
     }
+
+    sliderPositionToPriceRange(minSlider.offsetLeft, maxSlider.offsetLeft, mainWidth);
 }
 
+sliderPositionToPriceRange = (left, right, width) => {
+    const maxPrice = 1000;
+    const minPrice = 1;
+    let maxText = document.getElementById("maxPrice");
+    let minText = document.getElementById("minPrice");
+
+    maxText.innerHTML = "$" + Math.round((right/width) * 1000);
+    minText.innerHTML = "$" + Math.round((left/width) * 1000);
+}
