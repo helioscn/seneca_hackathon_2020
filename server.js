@@ -49,3 +49,9 @@ app.get("/providers", (req, res) =>{
         providersData: providers
     });
 });
+
+app.get("/register", (req, res) => {
+    res.render('register', {
+        title: "Login/Register"
+    });
+});
