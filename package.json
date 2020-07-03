@@ -1,0 +1,30 @@
+{
+  "name": "hackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "bootstrap": "^4.5.0",
+    "express-handlebars": "^4.0.4",
+    "express": "^4.17.1",
+    "handlebars": "^4.7.6",
+    "handlebars-helpers": "^0.10.0",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/helioscn/seneca_hackathon_2020.git"
+  },
+  "author": "gulnur, brandon, helios",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/helioscn/seneca_hackathon_2020/issues"
+  },
+  "homepage": "https://github.com/helioscn/seneca_hackathon_2020#readme"
+}
