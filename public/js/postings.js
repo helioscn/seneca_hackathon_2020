@@ -3,6 +3,7 @@ window.addEventListener("load", () => {
     setupCategorySearch();
     queryForPosts();
     setupLocationSearch();
+    setupCompensationRadios();
     setupPriceSliders();
 });
 
@@ -25,9 +26,9 @@ setupDistSlider = () => {
     const output = document.getElementById("postingsDistShow");
 
     output.innerHTML = distSlider.value;
-    distSlider.oninput = () => {
+    distSlider.addEventListener("input", () => {
         output.innerHTML = distSlider.value;
-    }
+    });
 
     distSlider.addEventListener("mouseup", () => {
         const content = document.getElementById("rightContent");
@@ -341,11 +342,14 @@ queryForPosts = () => {
     content.appendChild(spinner);
     
     posts.forEach((item, i) => {
+        // condition 1: show posts only within compensation range
         let minDollars = parseInt(document.getElementById("minPrice").innerText.replace(/^\$/, ""));
         let maxDollars = parseInt(document.getElementById("maxPrice").innerText.replace(/^\$/, ""));
         if (item.compensation >= minDollars && item.compensation <= maxDollars) {
+            // condition 2: show post only if compensation type matches
             let type = document.querySelectorAll("input[name='compType']:checked")[0].value;
             if ((type == "hourly" && item.hourly) || (type == "fixed" && !item.hourly) || type == "any") {
+                // call fetch distance api
                 fetchDistance(locInput.value, item.location).then(data => {
                     let radius = parseInt(document.getElementById("postingsDistSlider").value, 10);
                     let d = parseInt(data.distance.toFixed(1), 10);
@@ -353,6 +357,15 @@ queryForPosts = () => {
                 });
             }
         }
+    });
+}
+
+setupCompensationRadios = () => {
+    let radios = document.querySelectorAll("input[name='compType']");
+    radios.forEach(radio => {
+        radio.addEventListener("change", () => {
+            queryForPosts();
+        });
     });
 }
 
@@ -391,7 +404,7 @@ setupPriceSliders = () => {
 }
 
 movePriceSlider = (current, mouseX) => {
-    let mainSlider = document.getElementById("priceSlider");                         // main slider width minus slider width
+    let mainSlider = document.getElementById("priceSlider");                // main slider width minus slider width
     let xFromScreenLeft = mainSlider.getBoundingClientRect().left + 12;     // how far away start of main slider is from left edge of screen
     let minSlider = document.getElementById("minSlider");
     let maxSlider = document.getElementById("maxSlider");
