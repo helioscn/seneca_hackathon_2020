@@ -3,13 +3,16 @@ const hbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
-const router = express.Router();
+var providers = require('./public/js/providers').providers;
+var helpers = require('handlebars-helpers');
+var math = helpers.math();
+var array = helpers.array();
 
 // setup view engine
 app.engine('hbs', hbs({ 
     extname: 'hbs', 
     defaultLayout: 'layout',
-    layoutsDir: __dirname + '/views/layouts'
+    layoutsDir: __dirname + '/views/layouts',
 }));
 app.set('views', path.join(__dirname, 'views'));            // all views inside views
 app.set('view engine', 'hbs');                              
@@ -37,5 +40,12 @@ app.get("/", (req, res) => {
 app.get("/postings", (req, res) => {
     res.render('postings', {
         title: "Postings"
+    });
+});
+
+app.get("/providers", (req, res) =>{
+    res.render('providers',{
+        title: "Service Providers",
+        providersData: providers
     });
 });

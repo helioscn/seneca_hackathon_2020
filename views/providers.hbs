@@ -1,0 +1,52 @@
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script src="js/categories.js"></script>
+<script src="js/postings.js"></script>
+<script src="js/providers.js"></script>
+<section id="c_providers" onload="/postings.js">
+    <header>
+        <h1>Service Providers</h1>
+    </header>
+    <aside id="leftNav">
+        <div id="c_showLocation" class="c_leftNav">
+                <label>Location</label>
+                <input name="i_location" id="i_location" type="text">
+                <div id="c_locDropdown" class="c_dropdown"></div>
+            </div>
+            <div id="c_distSlider" class="c_leftNav">
+                <label>Within <b id="postingsDistShow">50</b> km radius</label>
+                <input type="range" min="1" max="200" value = "25" class="distSlider" id="postingsDistSlider">
+            </div>
+            <div id="c_categories" class="c_leftNav">
+                <label>Category</label>
+                <div>
+                    <input name="i_category" id="i_category" type="text" placeholder="Enter a category" oninput="chooseCategory()" onchange="chooseCategory()">
+                    <span id="deleteCategory">×</span>
+                </div>
+                <div id="c_catDropdown">
+                </div>
+            </div>
+    </aside>
+    <main id="c_providersCardHolder">
+        {{#each providersData}}
+            <div class="provider-card" data-categories="{{#each proficiencies}}{{@key}} {{/each}}{{firstName}} {{lastName}}">
+                <div>
+                    {{#if healthDoc}}
+                        <img class="cert-logo" src="assets/images/certified.png"/>
+                    {{/if}}
+                    <img class="profile-pic" src="{{image}}"/>
+                </div>
+                <h1>{{firstName}} {{lastName}}</h1>
+                <p>{{desc}}</p>
+                {{#each proficiencies}}
+                    <div class="w3-light-grey">
+                        <div class="w3-container w3-blue" style="width:{{multiply (divide this 5) 100}}%">
+                            <div class="pro-label">{{@key}}</div>
+                            <div class="pro-rating">{{this}}</div>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        {{/each}}
+    </main>
+</section>

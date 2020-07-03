@@ -303,3 +303,59 @@ html {
     height: 24px;
     margin-right: 8px;
 }
+
+/*Service Provider Page*/
+#c_providers{
+    display: flex;
+}
+
+#c_providers > h1 {
+    font-size: 32px;
+    color: rgba(0, 0, 0, 0.75);
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 48px;
+}
+
+#c_providersCardHolder {
+    width: 1200px;
+    margin: auto;
+    padding: 64px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: auto;
+    grid-gap: 1rem;
+}
+
+/*Service Provider Cards*/
+.provider-card{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+    position: relative;
+}
+
+.pro-label{
+    float: left;
+}
+
+.pro-rating{
+    float: right;
+}
+
+.provider-card:hover{
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.provider-card img{
+    max-width: 100%;
+    height: auto;
+    position: relative;
+}
+
+img.cert-logo{
+    max-width: 30%;
+    position: absolute;
+    z-index: 1;
+}
