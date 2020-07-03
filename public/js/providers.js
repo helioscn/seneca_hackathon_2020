@@ -7,6 +7,7 @@ let providers = [
             Delivery: 4.8,
             Shopping: 2.0
         },
+        address: "9201 YONGE ST, Richmond Hill, Ontario, L4C 6Z2",
         image: 'assets/images/BrandonCadaoas.jpg',
         healthDoc: '',
         desc: "Hi I'm Brandon. I do things."
@@ -19,6 +20,7 @@ let providers = [
             "Pet-Sitting": 4.8,
             Moving: 2.7
         },
+        address: "56 LAKE AVE, Richmond Hill, Ontario, L4E 3G3",
         image: 'assets/images/HeliosChan.jpg',
         healthDoc: '',
         desc: "Hi I'm Helios. I like to get things done."
@@ -31,6 +33,7 @@ let providers = [
             "Yard Work": 4.5,
             Errands: 3.2
         },
+        address: "4541 E Green Rock Rd, Regina, Saskatchewan S4V 3K8, Canada",
         image: 'assets/images/GulnurBaimukhambetova.jpg',
         healthDoc: 'assets/healthdocs/GulnurBaimukhambetova_healthcert.pdf',
         desc: "Hi I'm Gulnur. Things are done by me."
@@ -40,22 +43,18 @@ let providers = [
 exports.providers = providers;
 
 function chooseCategory(){
-    console.log("Hello");
-    var dropDownItems = document.getElementById("c_catDropdown").querySelectorAll(".item_catDropdown");
-    dropDownItems.forEach(item => {
-        item.addEventListener("click", () => {
-            console.log(item.innerHTML);
-        });
+    var catInput = document.getElementById("i_category").value;
+    var cards = document.querySelectorAll(".provider-card");
+    cards.forEach(card =>{
+        if ((card.dataset.categories.toLowerCase()).includes(catInput.toLowerCase())){
+            console.log(card.dataset.categories.toLowerCase());
+            console.log(catInput);
+            card.style.display = 'block';
+        }
+        else{
+            console.log(card.dataset.categories.toLowerCase());
+            console.log(catInput);
+            card.style.display = 'none';
+        }
     });
-
-    // var cards = document.getElementsByClassName("provider-card");
-    // cards.forEach(card => (console.log(card.dataset.categories)));
-    // if (inputVal){
-    //     var cards = document.getElementsByClassName("provider-card");
-    //     cards.forEach(card => {
-    //         if (!(inputVal in card.dataset.categories)){
-    //             card.style.display = 'none';
-    //         }
-    //     });
-    // }
 }

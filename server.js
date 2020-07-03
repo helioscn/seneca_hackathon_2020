@@ -6,6 +6,7 @@ const app = express();
 var providers = require('./public/js/providers').providers;
 var helpers = require('handlebars-helpers');
 var math = helpers.math();
+var array = helpers.array();
 
 // setup view engine
 app.engine('hbs', hbs({ 

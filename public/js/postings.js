@@ -41,9 +41,9 @@ setupCategorySearch = () => {
     const dropBox = document.getElementById("c_catDropdown");
     const deleteButton = document.getElementById("deleteCategory");
 
-    inputBox.addEventListener("change", () => {
-        console.log(inputBox.value);
-    });
+    // inputBox.addEventListener("change", () => {
+    //     console.log(inputBox.value);
+    // });
 
     if (inputBox.value != "")
         deleteButton.style.display = "block";

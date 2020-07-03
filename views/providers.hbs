@@ -7,10 +7,11 @@
     <header>
         <h1>Service Providers</h1>
     </header>
-    <aside id="leftNav">
-        <div id="c_showCity" class="c_leftNav">
+    <aside id="leftNav" onload="setupLocationSearch()">
+        <div id="c_showLocation" class="c_leftNav">
                 <label>Location</label>
-                <input name="i_city" id="i_city" type="text">
+                <input name="i_location" id="i_location" type="text">
+                <div id="c_locDropdown" class="c_dropdown"></div>
             </div>
             <div id="c_distSlider" class="c_leftNav">
                 <label>Within <b id="postingsDistShow">50</b> km radius</label>
@@ -19,7 +20,7 @@
             <div id="c_categories" class="c_leftNav">
                 <label>Category</label>
                 <div>
-                    <input name="i_category" id="i_category" type="text" placeholder="Enter a category" onchange="chooseCategory()">
+                    <input name="i_category" id="i_category" type="text" placeholder="Enter a category" oninput="chooseCategory()" onchange="chooseCategory()">
                     <span id="deleteCategory">×</span>
                 </div>
                 <div id="c_catDropdown">
@@ -28,7 +29,7 @@
     </aside>
     <main id="c_providersCardHolder">
         {{#each providersData}}
-            <div class="provider-card" data-categories="{{proficiencies}}">
+            <div class="provider-card" data-categories="{{#each proficiencies}}{{@key}} {{/each}}{{firstName}} {{lastName}}">
                 <div>
                     {{#if healthDoc}}
                         <img class="cert-logo" src="assets/images/certified.png"/>
