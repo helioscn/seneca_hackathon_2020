@@ -14,13 +14,13 @@ html {
     height: 100px;
 }
 
-#c_postings {
+#c_postings, #c_providers{
     width: 1200px;
     margin: auto;
     padding: 64px 0;
 }
 
-#c_postings > h1 {
+#c_postings > h1{
     font-size: 32px;
     color: rgba(0, 0, 0, 0.75);
     font-weight: normal;
@@ -28,7 +28,7 @@ html {
     margin-bottom: 48px;
 }
 
-#c_postingsInner {
+#c_postingsInner, #c_providersInner {
     display: flex;
     justify-content: space-between;
 }
@@ -298,23 +298,15 @@ html {
     color: rgba(0 ,0, 0, 0.7);
 }
 
-.c_iconInfo > img {
+.c_iconInfo > img, .card-dist-info > img{
     width: 24px;
     height: 24px;
     margin-right: 8px;
 }
 
 /*Service Provider Page*/
-#c_providers{
-    display: flex;
-}
-
-#c_providers > h1 {
-    font-size: 32px;
-    color: rgba(0, 0, 0, 0.75);
-    font-weight: normal;
-    margin-top: 0;
-    margin-bottom: 48px;
+#providers-header, #loc-label, #dist-label, #cat-label, #i_category, #c_providersCardHolder, #c_providersCardHolder h1{
+    font-family: 'Raleway';
 }
 
 #c_providersCardHolder {
@@ -334,14 +326,22 @@ html {
     margin: auto;
     text-align: center;
     position: relative;
+    transition: 0.5s;
+}
+
+.provider-card:hover{
+    transform: translateY(-20px);
 }
 
 .pro-label{
-    float: left;
+    clear: both;
+    text-align: left;
+    padding: 0 0 2px 1vw;
+    color: #777;
 }
 
 .pro-rating{
-    float: right;
+    text-align: left;
 }
 
 .provider-card:hover{
@@ -355,7 +355,32 @@ html {
 }
 
 img.cert-logo{
-    max-width: 30%;
-    position: absolute;
-    z-index: 1;
+    max-width: 20px;
+    display: inline;
+    line-height: 24px;
+}
+
+.card-header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.card-header h1{
+    font-size: 20px;
+    display: inline;
+    text-align: center;
+    margin-right: 5px;
+    font-weight: bolder;
+    color: #444;
+}
+
+.card-desc {
+    display: none;
+}
+
+.w3-white{
+    padding: 0 1vw 0 1vw;
+    margin-bottom: 12px;
 }
