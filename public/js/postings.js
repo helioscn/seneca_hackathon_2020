@@ -78,7 +78,9 @@ setupCategorySearch = () => {
     });
 
     deleteButton.addEventListener("click", () => {
+        var event = new Event('change');
         inputBox.value = "";
+        inputBox.dispatchEvent(event);
         deleteButton.style.display = "none";
     });
 }
