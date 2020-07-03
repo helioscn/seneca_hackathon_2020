@@ -2,7 +2,7 @@
     font-family: 'Raleway';
 }
 
-html {
+html, input {
     font-family: 'Raleway';
 }
 
@@ -16,7 +16,7 @@ html {
 
 #c_postings, #c_providers{
     width: 1200px;
-    margin: auto;
+    margin: 64px auto;
     padding: 64px 0;
 }
 
@@ -35,7 +35,7 @@ html {
 
 #leftNav {
     width: 300px;
-    height: 600px;
+    height: auto;
 }
 
 #rightContent {
@@ -103,12 +103,12 @@ html {
 }
 
 #deleteCategory {
-    font-size: 36px;
+    font-size: 24px;
     line-height: 0;
     color: #aaa;
     position: absolute;
     right: 12px;
-    top: 59px;
+    top: 76px;
     display: none;
 }
 
