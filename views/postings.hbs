@@ -1,13 +1,15 @@
 <link rel="stylesheet" href="css/main.css">
 <script src="js/categories.js"></script>
+<script src="js/posts.js"></script>
 <script src="js/postings.js"></script>
 <section id="c_postings">
     <h1>Service Requests</h1>
     <div id="c_postingsInner">
         <div id="leftNav">
-            <div id="c_showCity" class="c_leftNav">
-                <label>Location</label>
-                <input name="i_city" id="i_city" type="text">
+            <div id="showLocation" class="c_leftNav">
+                <label>Address</label>
+                <input name="i_location" id="i_location" type="text">
+                <div id="c_locDropdown" class="c_dropdown"></div>
             </div>
             <div id="c_distSlider" class="c_leftNav">
                 <label>Within <b id="postingsDistShow">50</b> km radius</label>
@@ -19,167 +21,32 @@
                     <input name="i_category" id="i_category" type="text" placeholder="Enter a category">
                     <span id="deleteCategory">×</span>
                 </div>
-                <div id="c_catDropdown">
+                <div id="c_catDropdown" class="c_dropdown"></div>
+            </div>
+            <div id="c_compensation" class="c_leftNav">
+                <label>Compensation Type</label>
+                <div class="c_radio">
+                    <input type="radio" name="compType" value="any" checked>
+                    <span>Any</span>
+                </div>
+                <div class="c_radio">
+                    <input type="radio" name="compType" value="hourly">
+                    <span>Hourly</span>
+                </div>
+                <div class="c_radio">
+                    <input type="radio" name="compType" value="fixed">
+                    <span>Fixed</span>
+                </div>
+            </div>
+            <div id="c_priceSlider" class="c_leftNav">
+                <label>From <b id="minPrice">1</b> to <b id="maxPrice">1000</b></label>
+                <div id="priceSlider">
+                    <div id="minSlider" class="priceSlider"></div>
+                    <div id="maxSlider" class="priceSlider"></div>
+                    <div id="innerPriceSlider"></div>
                 </div>
             </div>
         </div>
-        <div id="rightContent">
-            <div class="c_post">
-                <div class="c_postHeader">
-                    <img class="postHeaderImage" src="assets/images/postDefaultIcon.png">
-                    <div class="c_postHeaderInfo">
-                        <a href="#">Deliver groceries from Walmart</a>
-                        <span class="posterName">Poster Name</span>
-                        <span class="postCompensation">$65</span>
-                    </div>
-                    <span class="postDropdownButton">Show Details</span>
-                </div>
-                <div class="c_postBody">
-                    <hr>
-                    <h3>Description</h3>
-                    <p class="postBodyDesc">Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                </div>
-                <div class="c_postFooter">
-                    <div class="c_iconInfo">
-                        <img src="assets/images/ruler.png">
-                        <span>3.5 km away</span>
-                    </div>
-                    <div class="c_iconInfo">
-                        <img src="assets/images/clock.png">
-                        <span>15 minutes ago</span>
-                    </div>
-                </div>
-            </div>
-            <div class="c_post">
-                <div class="c_postHeader">
-                    <img class="postHeaderImage" src="assets/images/postDefaultIcon.png">
-                    <div class="c_postHeaderInfo">
-                        <a href="#">Deliver groceries from Walmart</a>
-                        <span class="posterName">Poster Name</span>
-                        <span class="postCompensation">$65</span>
-                    </div>
-                    <span class="postDropdownButton">Show Details</span>
-                </div>
-                <div class="c_postBody">
-                    <hr>
-                    <h3>Description</h3>
-                    <p class="postBodyDesc">Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                </div>
-                <div class="c_postFooter">
-                    <div class="c_iconInfo">
-                        <img src="assets/images/ruler.png">
-                        <span>3.5 km away</span>
-                    </div>
-                    <div class="c_iconInfo">
-                        <img src="assets/images/clock.png">
-                        <span>15 minutes ago</span>
-                    </div>
-                </div>
-            </div>
-            <div class="c_post">
-                <div class="c_postHeader">
-                    <img class="postHeaderImage" src="assets/images/postDefaultIcon.png">
-                    <div class="c_postHeaderInfo">
-                        <a href="#">Deliver groceries from Walmart</a>
-                        <span class="posterName">Poster Name</span>
-                        <span class="postCompensation">$65</span>
-                    </div>
-                    <span class="postDropdownButton">Show Details</span>
-                </div>
-                <div class="c_postBody">
-                    <hr>
-                    <h3>Description</h3>
-                    <p class="postBodyDesc">Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                </div>
-                <div class="c_postFooter">
-                    <div class="c_iconInfo">
-                        <img src="assets/images/ruler.png">
-                        <span>3.5 km away</span>
-                    </div>
-                    <div class="c_iconInfo">
-                        <img src="assets/images/clock.png">
-                        <span>15 minutes ago</span>
-                    </div>
-                </div>
-            </div>
-            <div class="c_post">
-                <div class="c_postHeader">
-                    <img class="postHeaderImage" src="assets/images/postDefaultIcon.png">
-                    <div class="c_postHeaderInfo">
-                        <a href="#">Deliver groceries from Walmart</a>
-                        <span class="posterName">Poster Name</span>
-                        <span class="postCompensation">$65</span>
-                    </div>
-                    <span class="postDropdownButton">Show Details</span>
-                </div>
-                <div class="c_postBody">
-                    <hr>
-                    <h3>Description</h3>
-                    <p class="postBodyDesc">Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                </div>
-                <div class="c_postFooter">
-                    <div class="c_iconInfo">
-                        <img src="assets/images/ruler.png">
-                        <span>3.5 km away</span>
-                    </div>
-                    <div class="c_iconInfo">
-                        <img src="assets/images/clock.png">
-                        <span>15 minutes ago</span>
-                    </div>
-                </div>
-            </div>
-            <div class="c_post">
-                <div class="c_postHeader">
-                    <img class="postHeaderImage" src="assets/images/postDefaultIcon.png">
-                    <div class="c_postHeaderInfo">
-                        <a href="#">Deliver groceries from Walmart</a>
-                        <span class="posterName">Poster Name</span>
-                        <span class="postCompensation">$65</span>
-                    </div>
-                    <span class="postDropdownButton">Show Details</span>
-                </div>
-                <div class="c_postBody">
-                    <hr>
-                    <h3>Description</h3>
-                    <p class="postBodyDesc">Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                </div>
-                <div class="c_postFooter">
-                    <div class="c_iconInfo">
-                        <img src="assets/images/ruler.png">
-                        <span>3.5 km away</span>
-                    </div>
-                    <div class="c_iconInfo">
-                        <img src="assets/images/clock.png">
-                        <span>15 minutes ago</span>
-                    </div>
-                </div>
-            </div>
-            <div class="c_post">
-                <div class="c_postHeader">
-                    <img class="postHeaderImage" src="assets/images/postDefaultIcon.png">
-                    <div class="c_postHeaderInfo">
-                        <a href="#">Deliver groceries from Walmart</a>
-                        <span class="posterName">Poster Name</span>
-                        <span class="postCompensation">$65</span>
-                    </div>
-                    <span class="postDropdownButton">Show Details</span>
-                </div>
-                <div class="c_postBody">
-                    <hr>
-                    <h3>Description</h3>
-                    <p class="postBodyDesc">Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                </div>
-                <div class="c_postFooter">
-                    <div class="c_iconInfo">
-                        <img src="assets/images/ruler.png">
-                        <span>3.5 km away</span>
-                    </div>
-                    <div class="c_iconInfo">
-                        <img src="assets/images/clock.png">
-                        <span>15 minutes ago</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="rightContent"></div>
     </div>
 </section>

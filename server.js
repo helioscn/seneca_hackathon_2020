@@ -13,9 +13,9 @@ app.engine('hbs', hbs({
     defaultLayout: 'layout',
     layoutsDir: __dirname + '/views/layouts',
 }));
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'views'));            // all views inside views
+app.set('view engine', 'hbs');                              
+app.use(express.static(path.join(__dirname, 'public')));    // css, js, assets inside ./public
 
 // setup body-parser
 app.use(bodyParser.json());
@@ -25,6 +25,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const PORT = process.env.PORT || 3000;
 app.set('port', PORT);
 app.listen(PORT);
+
+// look for routes
+app.use("/api/getlocation", require('./routes/getlocation'));
+app.use("/api/getdistance", require('./routes/getdistance'));
 
 app.get("/", (req, res) => {
     res.render('index', {
