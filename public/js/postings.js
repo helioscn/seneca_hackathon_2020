@@ -3,6 +3,7 @@ window.addEventListener("load", () => {
     setupCategorySearch();
     parsePostLocations();
     setupLocationSearch();
+    setupPriceSliders();
 });
 
 // document.createElement shorter identifier, with option of className
@@ -39,6 +40,10 @@ setupCategorySearch = () => {
     const inputBox = document.getElementById("i_category");
     const dropBox = document.getElementById("c_catDropdown");
     const deleteButton = document.getElementById("deleteCategory");
+
+    inputBox.addEventListener("change", () => {
+        console.log(inputBox.value);
+    });
 
     if (inputBox.value != "")
         deleteButton.style.display = "block";
@@ -89,7 +94,9 @@ queryCategories = (val) => {
         let container = ce("div", "item_catDropdown");
         container.innerHTML = item;
         container.addEventListener("click", () => {
+            var event = new Event('change');
             inputBox.value = item;
+            inputBox.dispatchEvent(event);
             document.getElementById("deleteCategory").style.display = "block";
         });
         dropBox.appendChild(container);
@@ -132,7 +139,11 @@ createPosts = (distance, i) => {
             avatar.src = "assets/images/postDefaultIcon.png";
             title.innerHTML = posts[i].title;
             user.innerHTML = posts[i].name;
-            compensation.innerHTML = "$" + posts[i].compensation;
+
+            let dollars = "$" + posts[i].compensation;
+            if (posts[i].hourly) dollars += "/hr";
+            compensation.innerHTML = dollars;
+
             button.innerHTML = "Show Details";
             toggleDetailsButton(button);
 
@@ -190,6 +201,7 @@ createPosts = (distance, i) => {
         const footer = createFooter();
 
         post.dataset.id = i;
+        post.dataset.hourly = posts[i].hourly;
         post.appendAll(header, body, footer);
         content.appendChild(post);
     }
@@ -310,24 +322,12 @@ setupLocationSearch = () => {
     });
 }
 
-/*
-configurePostDistance = () => {
-    const locInput = document.getElementById("i_location");
-    let shownPosts = document.querySelectorAll(".c_post");
-
-    shownPosts.forEach((item, i) => {
-        let addr = item.querySelector(".c_postFooter").dataset.address;
-        fetchDistance(item, locInput.value, addr);
-
-    });
-}
-*/
-
 parsePostLocations = () => {
     const locInput = document.getElementById("i_location");
     const content = document.getElementById("rightContent");
     const spinner = ce("img", "spinner");
     content.innerHTML = "";
+
     spinner.src = "assets/images/spinner.gif";
     content.appendChild(spinner);
     
@@ -335,3 +335,73 @@ parsePostLocations = () => {
         fetchDistance(i, locInput.value, item.location);
     });
 }
+
+setupPriceSliders = () => {
+    let sliderBg = document.getElementById("priceSlider");
+    let sliderWidth = sliderBg.clientWidth;
+    let minSlider = document.getElementById("minSlider");
+    let maxSlider = document.getElementById("maxSlider");
+    let minDrag = false, maxDrag = false;
+    let minX, maxX, offsetX;
+
+    minSlider.addEventListener("mousedown", (e) => {
+        minDrag = true;
+    });
+
+    maxSlider.addEventListener("mousedown", (e) => {
+        maxDrag = true;
+    });
+
+    document.addEventListener("mouseup", () => {
+        if (minDrag) 
+            minDrag = false;
+        else if (maxDrag)
+            maxDrag = false;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (minDrag) 
+            movePriceSlider("min", e.clientX)
+        else if (maxDrag)
+            movePriceSlider("max", e.clientX);
+    });
+}
+
+movePriceSlider = (current, mouseX) => {
+    let mainSlider = document.getElementById("priceSlider");
+    let xFromScreenLeft = mainSlider.getBoundingClientRect().left + 12;
+    let sliderW = mainSlider.clientWidth;
+    let minSlider = document.getElementById("minSlider");
+    let maxSlider = document.getElementById("maxSlider");
+    let inner = document.getElementById("innerPriceSlider");
+    let innerMaxW = maxSlider.offsetLeft;
+    let toPos = mouseX - xFromScreenLeft;
+
+    if (current === "min") {
+        if (toPos >= 0) {
+            let maxX = maxSlider.offsetLeft;
+            if (toPos <= maxX) {
+                inner.style.width = (innerMaxW - toPos) + "px";
+                inner.style.left = toPos + "px";
+                minSlider.style.left = toPos + "px";
+            } else {
+                minSlider.style.left = maxX;
+            }
+        } else {
+            minSlider.style.left = 0;
+        }
+    } else {
+        if (toPos <= sliderW - 24) {
+            let minX = minSlider.offsetLeft;
+            if (toPos >= minX) {
+                inner.style.width = inner.clientWidth - (inner.clientWidth - toPos) + "px";
+                maxSlider.style.left = toPos + "px";
+            } else {
+                maxSlider.style.left = minX;
+            }
+        } else {
+            maxSlider.style.left = (sliderW - 24) + "px";
+        }
+    }
+}
+

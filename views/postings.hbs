@@ -21,7 +21,29 @@
                     <input name="i_category" id="i_category" type="text" placeholder="Enter a category">
                     <span id="deleteCategory">×</span>
                 </div>
-                <div id="c_catDropdown" class="c_dropdown">
+                <div id="c_catDropdown" class="c_dropdown"></div>
+            </div>
+            <div id="c_compensation" class="c_leftNav">
+                <label>Compensation Type</label>
+                <div class="c_radio">
+                    <input type="radio" name="compType" value="any" checked>
+                    <span>Any</span>
+                </div>
+                <div class="c_radio">
+                    <input type="radio" name="compType" value="hourly">
+                    <span>Hourly</span>
+                </div>
+                <div class="c_radio">
+                    <input type="radio" name="compType" value="fixed">
+                    <span>Fixed</span>
+                </div>
+            </div>
+            <div id="c_priceSlider" class="c_leftNav">
+                <label>From <b id="minPrice">1</b> to <b id="maxPrice">1000</b></label>
+                <div id="priceSlider">
+                    <div id="minSlider" class="priceSlider"></div>
+                    <div id="maxSlider" class="priceSlider"></div>
+                    <div id="innerPriceSlider"></div>
                 </div>
             </div>
         </div>
