@@ -26,20 +26,20 @@
             <div id="c_compensation" class="c_leftNav">
                 <label>Compensation Type</label>
                 <div class="c_radio">
-                    <input type="radio" name="compType" value="any" checked>
+                    <input id="r_compAny" type="radio" name="compType" value="any" checked>
                     <span>Any</span>
                 </div>
                 <div class="c_radio">
-                    <input type="radio" name="compType" value="hourly">
+                    <input id="r_compHourly" type="radio" name="compType" value="hourly">
                     <span>Hourly</span>
                 </div>
                 <div class="c_radio">
-                    <input type="radio" name="compType" value="fixed">
+                    <input id="r_compFixed" type="radio" name="compType" value="fixed">
                     <span>Fixed</span>
                 </div>
             </div>
             <div id="c_priceSlider" class="c_leftNav">
-                <label>From <b id="minPrice">1</b> to <b id="maxPrice">1000</b></label>
+                <label>From <b id="minPrice">$0</b> to <b id="maxPrice">$1000</b></label>
                 <div id="priceSlider">
                     <div id="minSlider" class="priceSlider"></div>
                     <div id="maxSlider" class="priceSlider"></div>
